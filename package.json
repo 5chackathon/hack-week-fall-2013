@@ -1,0 +1,12 @@
+{
+    "name": "hack-week-app",
+    "description": "A social network for sharing photos",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "express": "3.4.2",
+        "gaikan": "1.3.13",
+        "passport": "0.1.17",
+        "passport-facebook": "1.0.1"
+    }
+}
