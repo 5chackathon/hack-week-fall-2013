@@ -1,2 +1,3 @@
 <p>You are <span data-if="!data.user">not</span> logged in. <span data-if="data.user">Hi, #{data.user.name.givenName}.</span></p>
 <p data-if="!data.user"><a href="/auth/facebook">Log in</a></p>
+<p data-if="data.user"><a href="/user/#{data.user.id}">Profile</a></p>
