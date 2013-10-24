@@ -1,0 +1,11 @@
+<html>
+  <head>
+    <title>#{data.user.name.givenName}'s Profile</title>
+  </head>
+  <body>
+    <h1>#{data.user.name.givenName} #{data.user.name.familyName}</h1>
+    <ul data-each="data.user.friends.data">
+      <li data-if="data">friend</li>
+    </ul>
+  </body>
+</html>
