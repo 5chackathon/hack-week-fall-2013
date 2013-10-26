@@ -10,7 +10,7 @@
     </form>
     <h2 id='posts'>Posts</h2>
     <ul data-each="data.user.posts">
-      <li data-if="data">#{data.time}</br>#{data.text}</li>
+      <li data-if="data">#{data.time}</br>By: #{data.user}</br>#{data.text}</li>
     </ul>
     <h2 id='friends'>Friends</h2>     
     <ul data-each="data.user.friends">
