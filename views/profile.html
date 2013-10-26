@@ -4,6 +4,15 @@
   </head>
   <body>
     <h1>#{data.user.displayName}</h1>
+    <form action='/wallpost/#{data.user.id}' method='post'>
+      <input type='text' name='post'></input>
+      <input type='submit'>
+    </form>
+    <h2 id='posts'>Posts</h2>
+    <ul data-each="data.user.posts">
+      <li data-if="data">#{data.time}</br>#{data.text}</li>
+    </ul>
+    <h2 id='friends'>Friends</h2>     
     <ul data-each="data.user.friends">
       <li data-if="data">#{data.name}</li>
     </ul>

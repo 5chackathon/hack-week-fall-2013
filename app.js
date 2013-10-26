@@ -41,7 +41,7 @@ passport.use(new FacebookStrategy({
 
 // In memory storage for users. Will be changed to a database
 var users = {};
-
+var post_id = 0;
 // Retrieve a user from storage
 function getUser(userID) {
     return users[userID];
@@ -50,6 +50,7 @@ function getUser(userID) {
 // Add a user to storage
 function addUser(profile) {
     users[profile.id] = profile;
+    users[profile.id].posts = [];
     return getUser(profile.id);
 }
 
@@ -113,7 +114,12 @@ app.get('/user/:user_id', function(req, res) {
     var user = getUser(req.params.user_id);
     // TODO: Check if this user is in the friends list of the current user.
     // If not, then we probably want to redirect back to index.
-    res.render('profile', {user: user});
+    res.render('profile', {user: user,posts: user.posts});
 });
-
+app.post('/wallpost/:user_id', function(req, res) {
+     post_id++;
+     users[req.params.user_id].posts[post_id]={'time':new Date(),'text':req.body['post']};
+     var user = getUser(req.params.user_id);
+     res.redirect('/user/'+user.id);
+});
 app.listen(3000);
