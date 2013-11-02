@@ -72,7 +72,11 @@ var app = express();
 app.configure(function(){
     // Use Gaikan as the HTML view renderer
     app.engine('html', gaikan);
+    app.set('views', __dirname + '/views');
     app.set('view engine', 'html');
+
+    //indicate directory of static files
+    app.use(express.static(path.join(__dirname, 'public')));
 
     // Set up passport magic
     app.use(express.bodyParser());
@@ -80,6 +84,7 @@ app.configure(function(){
     app.use(express.session({ 'secret': 'whisper' }));
     app.use(passport.initialize());
     app.use(passport.session());
+    
     app.use(app.router);
 });
 
@@ -122,4 +127,5 @@ app.post('/wallpost/:user_id', function(req, res) {
      var user = getUser(req.params.user_id);
      res.redirect('/user/'+user.id);
 });
+
 app.listen(3000);
