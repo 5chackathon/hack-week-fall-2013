@@ -1,3 +1,29 @@
-<p>You are <span data-if="!data.user">not</span> logged in. <span data-if="data.user">Hi, #{data.user.name.givenName}.</span></p>
-<p data-if="!data.user"><a href="/auth/facebook">Log in</a></p>
-<p data-if="data.user"><a href="/user/#{data.user.id}">Profile</a></p>
+<html>
+  <head>
+    <title>#{data.user.name.givenName}'s Profile</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+
+
+ <link href="/Slides/css/example.css" rel="stylesheet" >
+<link href="/css/bootstrap.min.css" rel="stylesheet" >
+<link href="/css/styles.css" rel="stylesheet" >
+
+  </head>
+ <body>
+ 	<div class="container">
+ 		<div class="jumbotron">
+	  <h1>Welcome!</h1>
+	  <p>This photo-sharing app ties in with Facebook to share and communicate with friends.</p> 
+
+	  <p> You are <span data-if="!data.user">not</span> logged in. <span data-if="data.user">Hi, <strong>#{data.user.name.givenName}</strong>.</span></p>
+
+	 <!--  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a></p> -->
+
+	  <p data-if="!data.user"><a class="btn btn-primary btn-lg" href="/auth/facebook">Log in</a></p>
+	<p data-if="data.user"><a class="btn btn-primary btn-lg" href="/user/#{data.user.id}">Profile</a></p>
+	</div>
+ 	</div>
+	
+
+ </body>
+</html>
