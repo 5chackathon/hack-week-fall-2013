@@ -125,7 +125,8 @@ app.get('/user/:user_id', function(req, res) {
 });
 app.post('/wallpost/:user_id', function(req, res) {
      post_id++;
-     users[req.params.user_id].posts[post_id]={'time':new Date(),'user':req.user.name.givenName,'text':req.body['post']};
+
+     users[req.params.user_id].posts[post_id]={'time':new Date(),'user':req.user.name.givenName,'text':req.body['post'], 'id':req.user.id};
      var user = getUser(req.params.user_id);
      res.redirect('/user/'+user.id);
 });
