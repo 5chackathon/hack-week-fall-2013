@@ -75,15 +75,14 @@ app.configure(function(){
     // app.set('views', __dirname + '/views');
     app.set('view engine', 'html');
 
-    
-
     // Set up passport magic
-    app.use(express.bodyParser());
+    app.use(express.json());
+    app.use(express.urlencoded());
     app.use(express.cookieParser());
     app.use(express.session({ 'secret': 'whisper' }));
     app.use(passport.initialize());
     app.use(passport.session());
-    
+
     var path = require('path');
     //indicate directory of static files
     app.use(express.static(path.join(__dirname, 'public')));
