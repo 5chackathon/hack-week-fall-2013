@@ -2,104 +2,67 @@
   <head>
     <title>#{data.user.first_name}'s Profile</title>
     <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
-
-
- <link href="/Slides/css/example.css" rel="stylesheet" >
-<link href="/css/bootstrap.min.css" rel="stylesheet" >
-<link href="/css/styles.css" rel="stylesheet" >
-
+    <link href="/Slides/css/example.css" rel="stylesheet" >
+    <link href="/css/bootstrap.min.css" rel="stylesheet" >
+    <link href="/css/styles.css" rel="stylesheet" >
   </head>
   <body>
     <script src="/js/bootstrap.min.js"></script>
-<!-- Nav bar start -->
+    <!-- Nav bar start -->
     <nav class="navbar navbar-inverse" role="navigation">
-  <a href="#" class="navbar-brand">Hack App</a>
-
-  <button class="navbar-toggle" data-toggle="collapse" data-target=".navHeaderCollapse">
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>
-
-  </button>
-  <div class="collapse navbar-collapse navHeaderCollapse">
-      <ul class="nav navbar-nav navbar-right">
-        <li> <a href="#"><span class="glyphicon glyphicon-home"></span> Home</a></li>
-        <li ><a data-toggle="modal" href="#friends">Friends</a></li>  
-        <li class="active"><a href="#">Images</a></li>
-        <li><a href="/logout">Logout</a></li>
-      </ul>
-  </div>
-</nav>
-<!-- Nav bar end -->
-
-
+      <a href="#" class="navbar-brand">Hack App</a>
+      <button class="navbar-toggle" data-toggle="collapse" data-target=".navHeaderCollapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="collapse navbar-collapse navHeaderCollapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li> <a href="#"><span class="glyphicon glyphicon-home"></span>Home</a></li>
+            <li ><a data-toggle="modal" href="#friends">Friends</a></li>
+            <li class="active"><a href="#">Images</a></li>
+            <li><a href="/logout">Logout</a></li>
+          </ul>
+      </div>
+    </nav>
+    <!-- Nav bar end -->
     <h1 style="text-align:center;">#{data.user.first_name}'s Photos</h1>
-   
-       
-  
- 
-
     <div class="row" id="test" style="padding: 0px 10px 0px 10px">
-  <div class="col-md-4">
-    <!-- <h3>Friends</h3>
-    <ul class="media-list" data-each="data.user.friends">
-    <li class="media">
-     
-
-      <div class="media-body">
-        <br/>
-        <p class="media-heading">#{data.name}</p>
+      <div class="col-md-4">
+        <h3>Posts:</h3>
+        <form action='/user/#{data.user._id}/wallpost' class="form-inline" role="form" method='post'>
+           <div class="form-group">
+              <textarea class="form-control" name="post"rows="4" cols="30"></textarea>
+           </div>
+           <div class="form-group">
+             <input class="btn btn-primary" type='submit'>
+           </div>
+         </form>
+         <ul class="media-list" data-each="data.user.posts">
+           <li data-if="data.text" class="media">
+             <div class="media-object pull-left">
+               <img src="https://graph.facebook.com/#{data.sender_id}/picture" height="50">
+             </div>
+             <div class="media-body">
+               <h4 class="media-heading">#{data.sender_name}</h4>
+               <p>#{data.text}</p>
+             </div>
+           </li>
+         </ul>
       </div>
-    </li>
-
-  </ul> -->
-   <h3>Posts:</h3>
-
-   <form action='/user/#{data.user._id}/wallpost' class="form-inline" role="form" method='post'>
-    <div class="form-group">
-       <textarea class="form-control" name="post"rows="4" cols="30"></textarea>
-    </div>
-
-    <div class="form-group">
-      <input class="btn btn-primary" type='submit'>
-    </div>
-     
-    </form>
-  <ul class="media-list" data-each="data.user.posts">
-    <li data-if="data.text" class="media">
-      <div class="media-object pull-left">
-        <img src="https://graph.facebook.com/#{data.sender_id}/picture" height="50">
-      </div>
-
-      <div class="media-body">
-        <h4 class="media-heading">#{data.sender_name}</h4>
-        <p>
-          #{data.text}
-        </p>
-      </div>
-    </li>
-
-  </ul>
-  </div>
-
 
   <div class="col-md-8">
-    
- <div class="container">
-    <div id="slides">
-      <img src="/Slides/img/example-slide-1.jpg" alt="Photo by: Missy S Link: http://www.flickr.com/photos/listenmissy/5087404401/">
-      <img src="/Slides/img/example-slide-2.jpg" alt="Photo by: Daniel Parks Link: http://www.flickr.com/photos/parksdh/5227623068/">
-      <img src="/Slides/img/example-slide-3.jpg" alt="Photo by: Mike Ranweiler Link: http://www.flickr.com/photos/27874907@N04/4833059991/">
-      <img src="/Slides/img/example-slide-4.jpg" alt="Photo by: Stuart SeegerLink: http://www.flickr.com/photos/stuseeger/97577796/">
-      <a href="#" class="slidesjs-previous slidesjs-navigation"><i class="glyphicon glyphicon-chevron-left"></i></a>
-      <a href="#"  class="slidesjs-next slidesjs-navigation"><i class="glyphicon glyphicon-chevron-right"></i></a>
+   <div class="container">
+      <div id="slides">
+        <img src="/Slides/img/example-slide-1.jpg" alt="Photo by: Missy S Link: http://www.flickr.com/photos/listenmissy/5087404401/">
+        <img src="/Slides/img/example-slide-2.jpg" alt="Photo by: Daniel Parks Link: http://www.flickr.com/photos/parksdh/5227623068/">
+        <img src="/Slides/img/example-slide-3.jpg" alt="Photo by: Mike Ranweiler Link: http://www.flickr.com/photos/27874907@N04/4833059991/">
+        <img src="/Slides/img/example-slide-4.jpg" alt="Photo by: Stuart SeegerLink: http://www.flickr.com/photos/stuseeger/97577796/">
+        <a href="#" class="slidesjs-previous slidesjs-navigation"><i class="glyphicon glyphicon-chevron-left"></i></a>
+        <a href="#"  class="slidesjs-next slidesjs-navigation"><i class="glyphicon glyphicon-chevron-right"></i></a>
+      </div>
     </div>
   </div>
-  
-  </div>
-
-
-
 </div>
 
 <!-- Fade modal transitoin -->
@@ -110,15 +73,17 @@
         <h3>Friends</h3>
       </div>
       <div class="modal-body">
-          <ul data-each="data.user.friends">
-            <li data-if="data">#{data.name}</li>
+        <ul data-each="data.user.friends">
+          <!-- FIX THE FRIENDS LIST
+          <li data-if="data.name">#{data.name}</li>
+          -->
         </ul>
       </div>
     </div>
   </div>
 </div>
 
-<script src="/Slides/js/jquery.slides.js"></script>
+  <script src="/Slides/js/jquery.slides.js"></script>
   <script>
     $(function() {
       $('#slides').slidesjs({
@@ -128,6 +93,5 @@
       });
     });
   </script>
-
   </body>
 </html>

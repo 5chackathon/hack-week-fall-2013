@@ -61,6 +61,14 @@ function addPost(user, post) {
     );
 }
 
+function addPhoto(user, photo) {
+    User.update( {_id: user._id },
+            { $push: { photos: photo } }, { upsert: true },
+            function(err, data) {
+            }
+    );
+}
+
 // Facebook app information
 const FB_ID = '228372603994396';
 const FB_APP_SECRET = '2c1f90d06c463e11f0ddfe4353c96a73';
@@ -85,17 +93,6 @@ function updateFriends(user, accessToken) {
         graph.get(user._id + '/friends', function(err, res) {
             user.update({ _id: user._id}, { $set: { friends: res.data } });
         });
-    }
-}
-
-function updateProfilePicture(user, accessToken) {
-    // Only update profile picture once an hour
-    const MILLIS_IN_HOUR = 3600000;
-    if (user.last_updated && new Date() - user.last_updates < MILLIS_IN_HOUR) {
-        graph.setAccessToken(accessToken);
-        graph.get(user._id + '/picture', function(err, res) {
-            user.update({ _id: user._id}, { $set: { friends: res.data } });
-        })
     }
 }
 
