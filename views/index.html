@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title data-if="data.user">#{data.user.name.givenName}'s Profile</title>
+    <title data-if="data.user">#{data.user.first_name}'s Profile</title>
     <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
 
 
@@ -15,12 +15,12 @@
 	  <h1>Welcome!</h1>
 	  <p>This photo-sharing app ties in with Facebook to share and communicate with friends.</p> 
 
-	  <p> You are <span data-if="!data.user">not</span> logged in. <span data-if="data.user">Hi, <strong>#{data.user.name.givenName}</strong>.</span></p>
+	  <p> You are <span data-if="!data.user">not</span> logged in. <span data-if="data.user">Hi, <strong>#{data.user.first_name}</strong>.</span></p>
 
 	 <!--  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a></p> -->
 
 	  <p data-if="!data.user"><a class="btn btn-primary btn-lg" href="/auth/facebook">Log in</a></p>
-	<p data-if="data.user"><a class="btn btn-primary btn-lg" href="/user/#{data.user.id}">Profile</a></p>
+	<p data-if="data.user"><a class="btn btn-primary btn-lg" href="/user/#{data.user._id}">Profile</a></p>
 	</div>
  	</div>
 	

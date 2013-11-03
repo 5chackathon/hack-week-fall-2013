@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>#{data.user.name.givenName}'s Profile</title>
+    <title>#{data.user.first_name}'s Profile</title>
     <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
 
 
@@ -26,14 +26,14 @@
         <li> <a href="#"><span class="glyphicon glyphicon-home"></span> Home</a></li>
         <li ><a data-toggle="modal" href="#friends">Friends</a></li>  
         <li class="active"><a href="#">Images</a></li>
-        <li><a href="#">Login</a></li>
+        <li><a href="/logout">Logout</a></li>
       </ul>
   </div>
 </nav>
 <!-- Nav bar end -->
 
 
-    <h1 style="text-align:center;">#{data.user.displayName}'s Photos</h1>
+    <h1 style="text-align:center;">#{data.user.first_name}'s Photos</h1>
    
        
   
@@ -55,7 +55,7 @@
   </ul> -->
    <h3>Posts:</h3>
 
-  <form action='/wallpost/#{data.user.id}' class="form-inline" role="form" method='post'>
+   <form action='/user/#{data.user._id}/wallpost' class="form-inline" role="form" method='post'>
     <div class="form-group">
        <textarea class="form-control" name="post"rows="4" cols="30"></textarea>
     </div>
@@ -66,14 +66,13 @@
      
     </form>
   <ul class="media-list" data-each="data.user.posts">
-    <li class="media">
-
+    <li data-if="data.text" class="media">
       <div class="media-object pull-left">
-        <img src="https://graph.facebook.com/#{data.id}/picture" height="50">
+        <img src="https://graph.facebook.com/#{data.sender_id}/picture" height="50">
       </div>
 
       <div class="media-body">
-        <h4 class="media-heading">#{data.user}</h4>
+        <h4 class="media-heading">#{data.sender_name}</h4>
         <p>
           #{data.text}
         </p>

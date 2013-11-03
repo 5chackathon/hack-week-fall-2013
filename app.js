@@ -12,9 +12,17 @@ var user_schema = mongoose.Schema({
     _id: Number,
     first_name: String,
     last_name: String,
-    last_updated: Number,
-    friends: [{ _id: String, name: String }],
-    posts: [{ text: String}]
+    last_updated: Date,
+    friends: [{
+        id: String,
+        name: String
+    }],
+    posts: [{
+        time: Date,
+        sender_id: Number,
+        sender_name: String,
+        text: String
+    }]
 });
 
 var User = mongoose.model('User', user_schema);
@@ -28,22 +36,29 @@ function getUser(user_id, done) {
 
 // Add a user to storage
 function addUser(profile) {
-    var user = {
+    var user = new User({
         _id: profile.id,
-        first_name: profile.displayName.firstName,
-        last_name: profile.displayName.lastName,
+        first_name: profile.name.givenName,
+        last_name: profile.name.familyName,
         friends: [],
         posts: [],
-    };
-    User.save(user);
+    });
+    user.save();
     return user;
 }
 
 // Updates a users info
 function updateUser(profile) {
-    User.update({ _id: profile.id }, profile, function() {
-        // Don't need to do anything
-    });
+    User.update({ _id: profile.id }, profile);
+}
+
+// Add a post to a user's wall
+function addPost(user, post) {
+    User.update( {_id: user._id },
+            { $push: { posts: post } }, { upsert: true },
+            function(err, data) {
+            }
+    );
 }
 
 // Facebook app information
@@ -58,29 +73,30 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function(id, done) {
     getUser(id, function(err, user) {
-        done(null, user);
+        done(err, user);
     });
 });
 
-function updateFriends(user, accessToken, done) {
+function updateFriends(user, accessToken) {
     // Only update friends once an hour
     const MILLIS_IN_HOUR = 3600000;
-    if (new Date() - user.last_updated < MILLIS_IN_HOUR) {
-        return done(null, user);
-    } else {
+    if (user.last_updated && new Date() - user.last_updated < MILLIS_IN_HOUR) {
         graph.setAccessToken(accessToken);
         graph.get(user._id + '/friends', function(err, res) {
-            // At some point, we will have to unpaginate this and filter
-            // friends down to those who have registered.
-            if (err) {
-                return done(err, user);
-            }
-            user.friends = res.data;
-            updateUser(user);
-            return done(null, user);
+            user.update({ _id: user._id}, { $set: { friends: res.data } });
         });
     }
+}
 
+function updateProfilePicture(user, accessToken) {
+    // Only update profile picture once an hour
+    const MILLIS_IN_HOUR = 3600000;
+    if (user.last_updated && new Date() - user.last_updates < MILLIS_IN_HOUR) {
+        graph.setAccessToken(accessToken);
+        graph.get(user._id + '/picture', function(err, res) {
+            user.update({ _id: user._id}, { $set: { friends: res.data } });
+        })
+    }
 }
 
 passport.use(new FacebookStrategy({
@@ -91,10 +107,9 @@ passport.use(new FacebookStrategy({
     function(accessToken, refreshToken, profile, done) {
         getUser(profile.id, function(err, user) {
             if (!user) {
-                addUser(profile);
-            } else {
-                return updateFriends(user, accessToken, done);
+                user = addUser(profile);
             }
+            return done(null, user);
         });
     }
 ));
@@ -128,10 +143,7 @@ app.get('/auth/facebook',
         });
 
 app.get('/auth/facebook/callback',
-        passport.authenticate('facebook', { failureRedirect: '/' }),
-        function(req, res) {
-            res.redirect('/');
-        });
+        passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/' }));
 
 app.get('/logout', function(req, res) {
     req.logout();
@@ -147,13 +159,14 @@ app.get('/', function(req, res) {
     }
 });
 
-app.get('/user/:user_id', function(req, res) {
+app.get('/user/:id', function(req, res) {
+    var id = parseInt(req.params.id);
     if (req.user) {
-        if (req.user._id === req.params.user_id) {
+        if (req.user._id === id) {
             // Render user profile
-            res.render('profile', { user: user, posts: user.posts });
+            res.render('profile', { user: req.user, posts: req.user.posts });
         } else {
-            getFriend(user, friend_id, function(err, friend) {
+            getFriend(req.user, id, function(err, friend) {
                 if (friend) {
                     res.render('profile', { user: friend, posts: friend.posts });
                 } else {
@@ -161,22 +174,23 @@ app.get('/user/:user_id', function(req, res) {
                 }
             });
         }
+    } else {
+        res.redirect('/', 401);
     }
-    res.redirect('/', 401);
 });
 
-app.post('/user/:user_id/', function(req, res) {
+app.post('/user/:user_id/wallpost', function(req, res) {
     if (!req.user) {
         res.redirect('/', 401);
     } else {
         var post = {
             time: new Date(),
-            sender: user._id,
-            recipient: req.params.user_id,
+            sender_id: req.user._id,
+            sender_name: req.user.first_name + ' ' + req.user.last_name,
             text: req.body['post']
         };
-        addPost(post);
-        res.redirect('/user/' + user.id);
+        addPost(req.user, post);
+        res.redirect('/user/' + req.user._id);
     }
 });
 
