@@ -3,6 +3,48 @@ var express = require('express');
 var passport = require('passport');
 var FacebookStrategy = require('passport-facebook').Strategy
 var graph = require('fbgraph');
+var path = require('path');
+var mongoose = require('mongoose');
+
+// Set up the database
+mongoose.connect('mongodb://localhost/photoapp');
+var user_schema = mongoose.Schema({
+    _id: Number,
+    first_name: String,
+    last_name: String,
+    last_updated: Number,
+    friends: [{ _id: String, name: String }],
+    posts: [{ text: String}]
+});
+
+var User = mongoose.model('User', user_schema);
+
+// Retrieve a user from storage
+function getUser(user_id, done) {
+    User.findOne({ _id: user_id }, function(err, user) {
+        done(null, user);
+    });
+}
+
+// Add a user to storage
+function addUser(profile) {
+    var user = {
+        _id: profile.id,
+        first_name: profile.displayName.firstName,
+        last_name: profile.displayName.lastName,
+        friends: [],
+        posts: [],
+    };
+    User.save(user);
+    return user;
+}
+
+// Updates a users info
+function updateUser(profile) {
+    User.update({ _id: profile.id }, profile, function() {
+        // Don't need to do anything
+    });
+}
 
 // Facebook app information
 const FB_ID = '228372603994396';
@@ -11,12 +53,35 @@ const FB_CALLBACK_URL = 'http://localhost:3000/auth/facebook/callback';
 
 // Necessary for saving users across sessions
 passport.serializeUser(function(user, done) {
-    done(null,user);
+    done(null, user._id);
 });
 
-passport.deserializeUser(function(obj, done) {
-    done(null, obj);
+passport.deserializeUser(function(id, done) {
+    getUser(id, function(err, user) {
+        done(null, user);
+    });
 });
+
+function updateFriends(user, accessToken, done) {
+    // Only update friends once an hour
+    const MILLIS_IN_HOUR = 3600000;
+    if (new Date() - user.last_updated < MILLIS_IN_HOUR) {
+        return done(null, user);
+    } else {
+        graph.setAccessToken(accessToken);
+        graph.get(user._id + '/friends', function(err, res) {
+            // At some point, we will have to unpaginate this and filter
+            // friends down to those who have registered.
+            if (err) {
+                return done(err, user);
+            }
+            user.friends = res.data;
+            updateUser(user);
+            return done(null, user);
+        });
+    }
+
+}
 
 passport.use(new FacebookStrategy({
     clientID: FB_ID,
@@ -24,74 +89,40 @@ passport.use(new FacebookStrategy({
     callbackURL: FB_CALLBACK_URL,
     },
     function(accessToken, refreshToken, profile, done) {
-        var user = getUser(profile.id) || addUser(profile);
-        graph.setAccessToken(accessToken);
-        graph.get(profile.id + '/friends', function(err, res) {
-            // At some point, we will have to unpaginate this and filter
-            // friends down to those who have registered.
-            if (err) {
-                console.log(err);
+        getUser(profile.id, function(err, user) {
+            if (!user) {
+                addUser(profile);
+            } else {
+                return updateFriends(user, accessToken, done);
             }
-            user.friends = res.data;
-            updateUser(user);
-            return done(null, user);
         });
     }
 ));
-
-// In memory storage for users. Will be changed to a database
-var users = {};
-var post_id = 0;
-// Retrieve a user from storage
-function getUser(userID) {
-    return users[userID];
-}
-
-// Add a user to storage
-function addUser(profile) {
-    users[profile.id] = profile;
-    users[profile.id].posts = [];
-    return getUser(profile.id);
-}
-
-// Updates a users info
-function updateUser(profile) {
-    users[profile.id] = profile;
-}
-
-// Finds user from givenName
-function findName(givenName){
-    for(var ids in users){
-	if(givenName==users[ids].name.givenName)
-	    return user2 = users[ids]
-    }
-}
 
 
 var app = express();
 app.configure(function(){
     // Use Gaikan as the HTML view renderer
     app.engine('html', gaikan);
-    // app.set('views', __dirname + '/views');
     app.set('view engine', 'html');
 
     // Set up passport magic
+    app.use(express.cookieParser());
     app.use(express.json());
     app.use(express.urlencoded());
-    app.use(express.cookieParser());
     app.use(express.session({ 'secret': 'whisper' }));
     app.use(passport.initialize());
     app.use(passport.session());
 
-    var path = require('path');
-    //indicate directory of static files
+    // Indicate directory of static files
     app.use(express.static(path.join(__dirname, 'public')));
     app.use(app.router);
+
 });
 
 // Authetication routes
 app.get('/auth/facebook',
-        passport.authenticate('facebook',{scope: ['user_friends','read_friendlists','user_status']}),
+        passport.authenticate('facebook', { scope: ['user_friends', 'read_friendlists', 'user_status'] }),
         function(req, res) {
            // This is Facebook's job -- do nothing
         });
@@ -109,25 +140,44 @@ app.get('/logout', function(req, res) {
 
 // Site routes
 app.get('/', function(req, res) {
-    res.render('index', {user: req.user});
+    if (req.user) {
+        res.render('index', {user: req.user});
+    } else {
+        res.render('index');
+    }
 });
 
 app.get('/user/:user_id', function(req, res) {
-    // FIXME: This needs to work...
-    if (!req.user) {
-        res.redirect('/');
+    if (req.user) {
+        if (req.user._id === req.params.user_id) {
+            // Render user profile
+            res.render('profile', { user: user, posts: user.posts });
+        } else {
+            getFriend(user, friend_id, function(err, friend) {
+                if (friend) {
+                    res.render('profile', { user: friend, posts: friend.posts });
+                } else {
+                    res.status(404).send('Not found');
+                }
+            });
+        }
     }
-    var user = getUser(req.params.user_id);
-    // TODO: Check if this user is in the friends list of the current user.
-    // If not, then we probably want to redirect back to index.
-    res.render('profile', {user: user,posts: user.posts});
+    res.redirect('/', 401);
 });
-app.post('/wallpost/:user_id', function(req, res) {
-     post_id++;
 
-     users[req.params.user_id].posts[post_id]={'time':new Date(),'user':req.user.name.givenName,'text':req.body['post'], 'id':req.user.id};
-     var user = getUser(req.params.user_id);
-     res.redirect('/user/'+user.id);
+app.post('/user/:user_id/', function(req, res) {
+    if (!req.user) {
+        res.redirect('/', 401);
+    } else {
+        var post = {
+            time: new Date(),
+            sender: user._id,
+            recipient: req.params.user_id,
+            text: req.body['post']
+        };
+        addPost(post);
+        res.redirect('/user/' + user.id);
+    }
 });
 
 app.listen(3000);

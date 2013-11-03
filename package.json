@@ -8,6 +8,7 @@
         "gaikan": "1.3.13",
         "passport": "0.1.17",
         "passport-facebook": "1.0.1",
-        "fbgraph": "0.2.8"
+        "fbgraph": "0.2.8",
+        "mongoose": "3.8.0"
     }
 }
