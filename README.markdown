@@ -3,10 +3,10 @@
 ## Pre-Installation
 ### Mac
 
-Go to [this link](https://developer.apple.com/downloads/index.action) and
-download the Command Line Tools for XCode, taking care to download the correcte
-version for your current operating system version (i.e., Mavericks, Mountain
-Lion, etc.).
+Go to [this link](https://developer.apple.com/downloads/index.action) to
+register as an Apple Developer and download the Command Line Tools for XCode,
+taking care to download the correct version for your current operating system
+version (i.e., Mavericks, Mountain Lion, etc.).
 
 Press Command+Spacebar to open search, then search and open Terminal.
 
@@ -69,6 +69,13 @@ Now, clone the source code into a local folder.
 Lastly, Install the node dependencies.
 
     npm install
+
+If would like to set up Facebook integration, you should navigate to the
+[Facebook developers site](http://developers.facebook.com) and register as a
+developer. Then, create a new application
+[here](https://developers.facebook.com/apps). Go to the page created for your
+new app, and copy down the app ID and app secret. Then, edit `app.js` and change
+`FB_ID` and `FB_APP_SECRET` to the values for your application.
 
 ## Running the application
 
