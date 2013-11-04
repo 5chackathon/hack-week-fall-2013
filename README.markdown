@@ -48,7 +48,7 @@ Open a terminal and enter the following command:
 
 ## Setting up the Application
 
-1. Navigate to a folder where you would like to store the code.
+First, navigate to a folder where you would like to store the code.
 
 #### Mac/Linux
 
@@ -61,12 +61,12 @@ Open a terminal and enter the following command:
     mkdir repos
     cd repos
 
-2. Clone the source code into a local folder.
+Now, clone the source code into a local folder.
 
     git clone https://github.com/euclio/hack-week-fall-2013.git
     cd hack-week-fall-2013
 
-3. Install the node dependencies.
+Lastly, Install the node dependencies.
 
     npm install
 
@@ -74,7 +74,7 @@ Open a terminal and enter the following command:
 
 Assuming that you are in the main directory of the application,
 
-1. Start up the database
+First, start up the database.
 
 #### Mac/Linux
 
@@ -88,8 +88,9 @@ If you get an error, you may need to run
 
     mongod
 
-2. Start nodejs
+Next, start nodejs.
 
     nodejs app.js
 
-3. Open up your browser and navigate to `http://localhost:3000`.
+Lastly, open up your browser and navigate to `http://localhost:3000`. You should
+see the website running locally.
