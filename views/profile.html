@@ -3,7 +3,7 @@
     <title>#{data.user.first_name}'s Profile</title>
     <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
     <link href="/Slides/css/example.css" rel="stylesheet" >
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
     <link href="/css/styles.css" rel="stylesheet" >
   </head>
   <body>
@@ -27,7 +27,7 @@
     </nav>
     <!-- Nav bar end -->
     <h1 style="text-align:center;">#{data.user.first_name}'s Photos</h1>
-    <div class="row" id="test" style="padding: 0px 10px 0px 10px">
+    <div class="row"  style="padding: 0px 10px 0px 10px">
       <div class="col-md-4">
         <h3>Posts:</h3>
         <form action='/user/#{data.user._id}/wallpost' class="form-inline" role="form" method='post'>
@@ -87,7 +87,7 @@
   <script>
     $(function() {
       $('#slides').slidesjs({
-        width: 940,
+         width: 940,
         height: 528,
         navigation: true
       });
