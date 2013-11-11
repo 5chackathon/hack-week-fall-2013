@@ -194,4 +194,16 @@ app.post('/user/:user_id/wallpost', function(req, res) {
     }
 });
 
+app.post('/user/:user_id/upload', function(req, res) {
+    if (!req.user) {
+        res.redirect('/', 401);
+    } else {
+        var photo = {
+            url: req.body['url']
+        };
+        addPhoto(req.user, photo);
+        res.redirect('/user/' + req.user._id);
+    }
+});
+
 app.listen(3000);

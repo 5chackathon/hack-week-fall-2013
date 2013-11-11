@@ -30,7 +30,7 @@
     <div class="row"  style="padding: 0px 10px 0px 10px">
       <div class="col-md-4">
         <h3>Posts:</h3>
-        <form action='/user/<%= user._id %>/wallpost' class="form-inline" role="form" method='post'>
+        <form action='/user/<%= user._id %>/wallpost' class="form-inline" role="form" method="post">
            <div class="form-group">
               <textarea class="form-control" name="post"rows="4" cols="30"></textarea>
            </div>
@@ -39,7 +39,7 @@
            </div>
          </form>
          <ul class="media-list">
-           <% for (var i = 0; i < user.posts.length; i++) { %>
+           <% for (var i = user.posts.length - 1; i >= 0; i--) { %>
               <li class="media">
                 <div class="media-object pull-left">
                   <img src="https://graph.facebook.com/<%= user.posts[i].sender_id %>/picture" height="50">
@@ -64,13 +64,19 @@
           <a href="#"  class="slidesjs-next slidesjs-navigation"><i class="glyphicon glyphicon-chevron-right"></i></a>
         <% } %>
       </div>
+      <form action="/user/<%= user._id %>/upload" class="form-inline" role="form" method="post">
+        <div class="form-group">
+          <input type="url" name="url" class="form-control" id="photo-url" placeholder="Enter a photo URL here">
+        </div>
+        <button type="submit" class="btn btn-primary">Upload Photo</button>
+      </form>
     </div>
   </div>
 </div>
 
 <!-- Fade modal transitoin -->
 <div class="modal fade" id="friends" role="dialog">
-  <div class="modal-dialog"> 
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h3>Friends</h3>
