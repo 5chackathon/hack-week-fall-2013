@@ -91,6 +91,10 @@ If you get an error, you may need to run
 
     sudo service mongodb stop
 
+Now, start nodejs.
+
+    nodejs app.js
+
 #### Windows
 
 MongoDB runs as a service on startup, so you shoudn't have to start any programs
