@@ -33,7 +33,6 @@ command, right click on the command prompt, paste the command, and press enter.
 
 Now, type the following commands, pressing enter after each one:
 
-    cinst git.install
     cinst nodejs.install
     cinst nodejs.command
     cinst mongodb
@@ -44,7 +43,7 @@ Close and reopen your command prompt.
 
 Open a terminal and enter the following command:
 
-    sudo apt-get install git nodejs mongodb
+    sudo apt-get install nodejs mongodb
 
 ## Setting up the Application
 
