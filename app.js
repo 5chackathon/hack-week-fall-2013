@@ -1,4 +1,3 @@
-var gaikan = require('gaikan');
 var express = require('express');
 var passport = require('passport');
 var FacebookStrategy = require('passport-facebook').Strategy
@@ -22,7 +21,10 @@ var user_schema = mongoose.Schema({
         sender_id: Number,
         sender_name: String,
         text: String
-    }]
+    }],
+    photos: [{
+        url: String,
+    }],
 });
 
 var User = mongoose.model('User', user_schema);
@@ -45,11 +47,6 @@ function addUser(profile) {
     });
     user.save();
     return user;
-}
-
-// Updates a users info
-function updateUser(profile) {
-    User.update({ _id: profile.id }, profile);
 }
 
 // Add a post to a user's wall
@@ -86,14 +83,21 @@ passport.deserializeUser(function(id, done) {
 });
 
 function updateFriends(user, accessToken) {
-    // Only update friends once an hour
-    const MILLIS_IN_HOUR = 3600000;
-    if (user.last_updated && new Date() - user.last_updated < MILLIS_IN_HOUR) {
-        graph.setAccessToken(accessToken);
-        graph.get(user._id + '/friends', function(err, res) {
-            user.update({ _id: user._id}, { $set: { friends: res.data } });
+    graph.setAccessToken(accessToken);
+    graph.get(user._id + '/friends?fields=id,name,installed', function(err, res) {
+        var friends = [];
+
+        // Only add friends that have the application installed
+        for (var i = 0; i < res.data.length; i++) {
+            if (res.data[i].installed) {
+                friends.push(res.data[i]);
+            }
+        }
+
+        User.update({ _id: user._id}, { $set: { friends: friends } }, { upsert: true }, function(err, user) {
+            // Don't do anything
         });
-    }
+    });
 }
 
 passport.use(new FacebookStrategy({
@@ -106,17 +110,16 @@ passport.use(new FacebookStrategy({
             if (!user) {
                 user = addUser(profile);
             }
+            updateFriends(user, accessToken);
             return done(null, user);
         });
     }
 ));
 
-
 var app = express();
-app.configure(function(){
-    // Use Gaikan as the HTML view renderer
-    app.engine('html', gaikan);
-    app.set('view engine', 'html');
+app.configure(function() {
+    // Use ejs as the view engine
+    app.set('view engine', 'ejs');
 
     // Set up passport magic
     app.use(express.cookieParser());
@@ -163,9 +166,9 @@ app.get('/user/:id', function(req, res) {
             // Render user profile
             res.render('profile', { user: req.user, posts: req.user.posts });
         } else {
-            getFriend(req.user, id, function(err, friend) {
+            getUser(req.params.id, function(err, friend) {
                 if (friend) {
-                    res.render('profile', { user: friend, posts: friend.posts });
+                    res.render('profile', { user: friend });
                 } else {
                     res.status(404).send('Not found');
                 }
@@ -187,6 +190,18 @@ app.post('/user/:user_id/wallpost', function(req, res) {
             text: req.body['post']
         };
         addPost(req.user, post);
+        res.redirect('/user/' + req.user._id);
+    }
+});
+
+app.post('/user/:user_id/upload', function(req, res) {
+    if (!req.user) {
+        res.redirect('/', 401);
+    } else {
+        var photo = {
+            url: req.body['url']
+        };
+        addPhoto(req.user, photo);
         res.redirect('/user/' + req.user._id);
     }
 });

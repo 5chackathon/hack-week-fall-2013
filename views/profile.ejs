@@ -1,9 +1,9 @@
 <html>
   <head>
-    <title>#{data.user.first_name}'s Profile</title>
+    <title><%= user.first_name %>'s Profile</title>
     <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
     <link href="/Slides/css/example.css" rel="stylesheet" >
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
     <link href="/css/styles.css" rel="stylesheet" >
   </head>
   <body>
@@ -26,11 +26,11 @@
       </div>
     </nav>
     <!-- Nav bar end -->
-    <h1 style="text-align:center;">#{data.user.first_name}'s Photos</h1>
-    <div class="row" id="test" style="padding: 0px 10px 0px 10px">
+    <h1 style="text-align:center;"><%= user.first_name %>'s Photos</h1>
+    <div class="row"  style="padding: 0px 10px 0px 10px">
       <div class="col-md-4">
         <h3>Posts:</h3>
-        <form action='/user/#{data.user._id}/wallpost' class="form-inline" role="form" method='post'>
+        <form action='/user/<%= user._id %>/wallpost' class="form-inline" role="form" method="post">
            <div class="form-group">
               <textarea class="form-control" name="post"rows="4" cols="30"></textarea>
            </div>
@@ -38,45 +38,54 @@
              <input class="btn btn-primary" type='submit'>
            </div>
          </form>
-         <ul class="media-list" data-each="data.user.posts">
-           <li data-if="data.text" class="media">
-             <div class="media-object pull-left">
-               <img src="https://graph.facebook.com/#{data.sender_id}/picture" height="50">
-             </div>
-             <div class="media-body">
-               <h4 class="media-heading">#{data.sender_name}</h4>
-               <p>#{data.text}</p>
-             </div>
-           </li>
+         <ul class="media-list">
+           <% for (var i = user.posts.length - 1; i >= 0; i--) { %>
+              <li class="media">
+                <div class="media-object pull-left">
+                  <img src="https://graph.facebook.com/<%= user.posts[i].sender_id %>/picture" height="50">
+                </div>
+                <div class="media-body">
+                  <h4 class="media-heading"><% user.posts[i].sender_name %></h4>
+                  <p><%= user.posts[i].text %></p>
+                </div>
+              </li>
+            <% } %>
          </ul>
       </div>
 
   <div class="col-md-8">
    <div class="container">
       <div id="slides">
-        <img src="/Slides/img/example-slide-1.jpg" alt="Photo by: Missy S Link: http://www.flickr.com/photos/listenmissy/5087404401/">
-        <img src="/Slides/img/example-slide-2.jpg" alt="Photo by: Daniel Parks Link: http://www.flickr.com/photos/parksdh/5227623068/">
-        <img src="/Slides/img/example-slide-3.jpg" alt="Photo by: Mike Ranweiler Link: http://www.flickr.com/photos/27874907@N04/4833059991/">
-        <img src="/Slides/img/example-slide-4.jpg" alt="Photo by: Stuart SeegerLink: http://www.flickr.com/photos/stuseeger/97577796/">
-        <a href="#" class="slidesjs-previous slidesjs-navigation"><i class="glyphicon glyphicon-chevron-left"></i></a>
-        <a href="#"  class="slidesjs-next slidesjs-navigation"><i class="glyphicon glyphicon-chevron-right"></i></a>
+        <% for (var i = 0; i < user.photos.length; i++) { %>
+          <img src="<%= user.photos[i].url %>">
+        <% } %>
+        <% if (user.photos.length > 1) { %>
+          <a href="#" class="slidesjs-previous slidesjs-navigation"><i class="glyphicon glyphicon-chevron-left"></i></a>
+          <a href="#"  class="slidesjs-next slidesjs-navigation"><i class="glyphicon glyphicon-chevron-right"></i></a>
+        <% } %>
       </div>
+      <form action="/user/<%= user._id %>/upload" class="form-inline" role="form" method="post">
+        <div class="form-group">
+          <input type="url" name="url" class="form-control" id="photo-url" placeholder="Enter a photo URL here">
+        </div>
+        <button type="submit" class="btn btn-primary">Upload Photo</button>
+      </form>
     </div>
   </div>
 </div>
 
 <!-- Fade modal transitoin -->
 <div class="modal fade" id="friends" role="dialog">
-  <div class="modal-dialog"> 
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h3>Friends</h3>
       </div>
       <div class="modal-body">
-        <ul data-each="data.user.friends">
-          <!-- FIX THE FRIENDS LIST
-          <li data-if="data.name">#{data.name}</li>
-          -->
+        <ul>
+          <% for (var i = 0; i < user.friends.length; i++) { %>
+            <li><a href="/user/<%= user.friends[i].id %>"><%= user.friends[i].name %></a></li>
+          <% } %>
         </ul>
       </div>
     </div>
@@ -87,7 +96,7 @@
   <script>
     $(function() {
       $('#slides').slidesjs({
-        width: 940,
+         width: 940,
         height: 528,
         navigation: true
       });

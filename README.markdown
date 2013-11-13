@@ -34,7 +34,7 @@ command, right click on the command prompt, paste the command, and press enter.
 Now, type the following commands, pressing enter after each one:
 
     cinst nodejs.install
-    cinst nodejs.command
+    cinst nodejs.commandline
     cinst mongodb
 
 Close and reopen your command prompt.
@@ -90,13 +90,18 @@ If you get an error, you may need to run
 
     sudo service mongodb stop
 
+Now, start nodejs.
+
+    nodejs app.js
+
 #### Windows
 
-    mongod
+MongoDB runs as a service on startup, so you shoudn't have to start any programs
+to use the database.
 
 Next, start nodejs.
 
-    nodejs app.js
+    node app.js
 
 Lastly, open up your browser and navigate to `http://localhost:3000`. You should
 see the website running locally.
