@@ -35,7 +35,7 @@ Now, type the following commands, pressing enter after each one:
 
     cinst nodejs.install
     cinst nodejs.commandline
-    cinst mongodb
+    cinst gb.MongoDB
 
 Close and reopen your command prompt.
 
